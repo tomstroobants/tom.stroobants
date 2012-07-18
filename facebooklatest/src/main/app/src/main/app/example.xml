@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" 
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	  xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+	  xmlns:spring="http://www.springframework.org/schema/beans" 
+	  xmlns:xm="http://www.mulesource.org/schema/mule/xml/2.2"
+	  xmlns:facebook="http://www.mulesoft.org/schema/mule/facebook" 
+	  xmlns:jdbc="http://www.mulesoft.org/schema/mule/jdbc" 
+	  xsi:schemaLocation=" 
+	  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+	  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.2/mule-http.xsd 
+	  http://www.mulesoft.org/schema/mule/jdbc http://www.mulesoft.org/schema/mule/jdbc/current/mule-jdbc.xsd
+	  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	  http://www.mulesoft.org/schema/mule/facebook http://www.mulesoft.org/schema/mule/facebook/2.0/mule-facebook.xsd 
+	  http://www.mulesource.org/schema/mule/xml/2.2 http://www.mulesource.org/schema/mule/xml/2.2/mule-xml.xsd">
+
+	<custom-transformer class="be.contribute.service.FacebookTransformer" name="FacebookTransformer"/>
+
+    <spring:beans>
+        <spring:bean id="jdbcDataSource" name="jdbcDataSource" class="org.enhydra.jdbc.standard.StandardDataSource" destroy-method="shutdown">
+            <spring:property name="password" value="cipal"/>
+            <spring:property name="user" value="cipal"/>
+            <spring:property name="url" value="jdbc:mysql://localhost/cipal"/>
+            <spring:property name="driverName" value="com.mysql.jdbc.Driver"/>
+        </spring:bean>
+    </spring:beans>
+    
+    <jdbc:connector name="FACEBOOK_TOKEN" dataSource-ref="jdbcDataSource" validateConnections="true" queryTimeout="-1" pollingFrequency="0"/>
+
+
+	    
+    <facebook:config name="config1" appId="445660132118788" appSecret="ac42eff5f48cce6a57d506871dbe794a"> 
+        <facebook:oauth-callback-config domain="localhost" localPort="8083" remotePort="8083"></facebook:oauth-callback-config>
+        
+        <facebook:oauth-save-access-token>           
+            <jdbc:outbound-endpoint exchange-pattern="request-response" queryKey="INSERT_TOKEN" responseTimeout="10000" mimeType="text/plain" queryTimeout="-1" transformer-refs="FacebookTransformer" connector-ref="FACEBOOK_TOKEN">    
+                <jdbc:query key="INSERT_TOKEN" value="insert into facebook values('1',#[bean:token],#[bean:secret]);"/> 
+            </jdbc:outbound-endpoint> 
+        </facebook:oauth-save-access-token>  
+        <facebook:oauth-restore-access-token> 
+            <enricher target="#[header:headerOAuthAccessToken]">  
+                <jdbc:outbound-endpoint name="loadAccessToken" exchange-pattern="request-response" queryKey="SELECT_TOKEN">  
+                    <jdbc:query key="SELECT_TOKEN" value="select token,secret from facebook where id='1';"/> 
+                </jdbc:outbound-endpoint> 
+            </enricher>
+            <component class="be.contribute.service.JdbcRowComponent" />
+            <message-properties-transformer scope="invocation">
+            	<add-message-property key="OAuthAccessToken" value="#[groovy:payload['token']]" />
+            	<add-message-property key="OAuthAccessTokenSecret" value="#[groovy:payload['secret']]" />
+            </message-properties-transformer>            
+        </facebook:oauth-restore-access-token> 
+          
+    </facebook:config>  
+    <flow name="publish"> 
+        <http:inbound-endpoint host="localhost" port="8083" path="publish"></http:inbound-endpoint>  
+        <facebook:publish-message config-ref="config1" profile_id="john.kanon.3" msg="Hello everyone !"></facebook:publish-message>  
+    </flow>  
+    <flow name="authorize"> 
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8083" path="authorize"></http:inbound-endpoint>  
+        <facebook:authorize config-ref="config1"></facebook:authorize>  
+    </flow>  
+</mule>

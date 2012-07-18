@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry exported="true" kind="con" path="MULE_RUNTIME"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="lib" path="/projects/maven/repo/org/mule/modules/mule-module-facebook/2.0-SNAPSHOT/mule-module-facebook-2.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/projects/maven/repo/oauth/signpost/signpost-core/1.2.1.1/signpost-core-1.2.1.1.jar"/>
+	<classpathentry kind="lib" path="/projects/maven/repo/org/mule/tools/devkit/mule-devkit-annotations/3.3.0-EA/mule-devkit-annotations-3.3.0-EA.jar"/>
+	<classpathentry kind="lib" path="/projects/maven/repo/org/mule/modules/mule-module-annotations/3.3.0-RC3/mule-module-annotations-3.3.0-RC3.jar"/>
+	<classpathentry kind="lib" path="/projects/maven/repo/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

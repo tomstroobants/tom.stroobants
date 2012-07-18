@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="example">
+    <global-element type="http://www.mulesoft.org/schema/mule/core/custom-transformer" name="Java" entity-id="52b19d2d-4cbb-49b4-8fc7-94c6bbb35ee7">
+        <properties>
+            <property name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="encoding"/>
+            <property name="mimeType"/>
+            <property value="be.contribute.service.FacebookTransformer" name="class"/>
+            <property value="FacebookTransformer" name="name"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.springframework.org/schema/beans/bean" name="Bean" entity-id="41cc071c-2557-46b9-a1e5-d961c81fa84f">
+        <properties>
+            <property value="jdbcDataSource" name="id"/>
+            <property value="jdbcDataSource" name="name"/>
+            <property value="org.enhydra.jdbc.standard.StandardDataSource" name="class"/>
+            <property name="parent"/>
+            <property name="scope"/>
+            <property name="abstract"/>
+            <property name="lazy-init"/>
+            <property name="autowire"/>
+            <property name="depends-on"/>
+            <property name="autowire-candidate"/>
+            <property name="primary"/>
+            <property name="init-method"/>
+            <property value="shutdown" name="destroy-method"/>
+            <property name="factory-method"/>
+            <property name="factory-bean"/>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;0">
+                <property value="password" name="name"/>
+                <property value="cipal" name="value"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;1">
+                <property value="user" name="name"/>
+                <property value="cipal" name="value"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;2">
+                <property value="url" name="name"/>
+                <property value="jdbc:mysql://localhost/cipal" name="value"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;3">
+                <property value="driverName" name="name"/>
+                <property value="com.mysql.jdbc.Driver" name="value"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <global-element type="org.mule.tooling.ui.modules.core.global.jdbcConnector" name="Database (JDBC)" entity-id="cce2417e-b12c-4b60-a337-355eee830085">
+        <properties>
+            <property value="FACEBOOK_TOKEN" name="name"/>
+            <property value="jdbcDataSource" name="dataSource-ref to JDBC DataSource"/>
+            <property value="jdbcDataSource" name="dataSource-ref to Bean"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="queryRunner-ref"/>
+            <property name="resultSetHandler-ref"/>
+            <property name="dynamicNotification"/>
+            <property value="true" name="validateConnections"/>
+            <property name="transactionPerMessage"/>
+            <property value="-1" name="queryTimeout"/>
+            <property value="0" name="pollingFrequency"/>
+        </properties>
+    </global-element>
+    <global-unknown entity-id="4d71b8c8-9fd4-4119-ac53-3f76210e6f26">
+        <content>&lt;facebook:config xmlns:facebook=&quot;http://www.mulesoft.org/schema/mule/facebook&quot; name=&quot;config1&quot; appId=&quot;445660132118788&quot; appSecret=&quot;ac42eff5f48cce6a57d506871dbe794a&quot;&gt; 
+        &lt;facebook:oauth-callback-config domain=&quot;localhost&quot; localPort=&quot;8083&quot; remotePort=&quot;8083&quot;/&gt;
+        
+        &lt;facebook:oauth-save-access-token&gt;           
+            &lt;jdbc:outbound-endpoint xmlns:jdbc=&quot;http://www.mulesoft.org/schema/mule/jdbc&quot; exchange-pattern=&quot;request-response&quot; queryKey=&quot;INSERT_TOKEN&quot; responseTimeout=&quot;10000&quot; mimeType=&quot;text/plain&quot; queryTimeout=&quot;-1&quot; transformer-refs=&quot;FacebookTransformer&quot; connector-ref=&quot;FACEBOOK_TOKEN&quot;&gt;    
+                &lt;jdbc:query key=&quot;INSERT_TOKEN&quot; value=&quot;insert into facebook values('1',#[bean:token],#[bean:secret]);&quot;/&gt; 
+            &lt;/jdbc:outbound-endpoint&gt; 
+        &lt;/facebook:oauth-save-access-token&gt;  
+        &lt;facebook:oauth-restore-access-token&gt; 
+            &lt;enricher xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; target=&quot;#[header:headerOAuthAccessToken]&quot;&gt;  
+                &lt;jdbc:outbound-endpoint xmlns:jdbc=&quot;http://www.mulesoft.org/schema/mule/jdbc&quot; name=&quot;loadAccessToken&quot; exchange-pattern=&quot;request-response&quot; queryKey=&quot;SELECT_TOKEN&quot;&gt;  
+                    &lt;jdbc:query key=&quot;SELECT_TOKEN&quot; value=&quot;select token,secret from facebook where id='1';&quot;/&gt; 
+                &lt;/jdbc:outbound-endpoint&gt; 
+            &lt;/enricher&gt;
+            &lt;component xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; class=&quot;be.contribute.service.JdbcRowComponent&quot;/&gt;
+            &lt;message-properties-transformer xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; scope=&quot;invocation&quot;&gt;
+            	&lt;add-message-property key=&quot;OAuthAccessToken&quot; value=&quot;#[groovy:payload['token']]&quot;/&gt;
+            	&lt;add-message-property key=&quot;OAuthAccessTokenSecret&quot; value=&quot;#[groovy:payload['secret']]&quot;/&gt;
+            &lt;/message-properties-transformer&gt;            
+        &lt;/facebook:oauth-restore-access-token&gt; 
+          
+    &lt;/facebook:config&gt;</content>
+    </global-unknown>
+    <flow SubFlow="false" name="publish">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+        </properties>
+        <lane entity-id="e8b604dc-f79c-4332-be84-b4e4150f663d">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="dfcdf9bd-2039-4d61-88c9-2e31ff2b4ae8">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="8083" name="port"/>
+                    <property value="publish" name="path"/>
+                    <property name="method"/>
+                    <property name="address"/>
+                    <property name="responseTimeout"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="followRedirects"/>
+                    <property name="ref"/>
+                    <property name="connector-ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+            </endpoint>
+            <unknown entity-id="9f65e428-7f05-4ae1-b041-f06c76fd7458">
+                <content>&lt;facebook:publish-message xmlns:facebook=&quot;http://www.mulesoft.org/schema/mule/facebook&quot; config-ref=&quot;config1&quot; profile_id=&quot;john.kanon.3&quot; msg=&quot;Hello everyone !&quot;/&gt;</content>
+            </unknown>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="authorize">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+        </properties>
+        <lane entity-id="dd41a65c-5af7-44e5-afdb-640ba25ac441">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="9261d210-fe62-40fa-bb09-aff7cc7ae319">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="8083" name="port"/>
+                    <property value="authorize" name="path"/>
+                    <property name="method"/>
+                    <property name="address"/>
+                    <property name="responseTimeout"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="followRedirects"/>
+                    <property name="ref"/>
+                    <property name="connector-ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+            </endpoint>
+            <unknown entity-id="82af3452-878b-4a18-84d6-661ef8c4187c">
+                <content>&lt;facebook:authorize xmlns:facebook=&quot;http://www.mulesoft.org/schema/mule/facebook&quot; config-ref=&quot;config1&quot;/&gt;</content>
+            </unknown>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>

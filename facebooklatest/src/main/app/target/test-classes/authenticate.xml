@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:facebook="http://www.mulesoft.org/schema/mule/facebook" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="EE-3.3.0" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+http://www.mulesoft.org/schema/mule/facebook http://www.mulesoft.org/schema/mule/facebook/2.0/mule-facebook.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd ">
+
+    <facebook:config name="mule1" appId="mule1" appSecret="5SA6BBMCEA">
+    	<facebook:oauth-callback-config domain="localhost" localPort="8083" remotePort="8083"/>
+    </facebook:config>
+
+
+    <flow name="search" doc:name="authenticateFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8083" path="search" doc:name="HTTP"/>
+        <logger message="###### FACEBOOK AUTHENTICATION" level="INFO" doc:name="Logger"/>
+        <facebook:search config-ref="mule1" q="muelsoft"/>
+    </flow>
+
+
+    <flow name="authenticateFlow1" doc:name="authenticateFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8083" path="login" doc:name="HTTP"/>
+        <logger message="###### FACEBOOK AUTHENTICATION" level="INFO" doc:name="Logger"/>
+    </flow>
+    
+
+    
+    <flow name="linkedinnogFlow1" doc:name="linkedinnogFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8083" path="changestatus" doc:name="HTTP"/>
+        <facebook:publish-message config-ref="mule1" profile_id="" msg="hallo"> </facebook:publish-message>
+    </flow>    
+    
+</mule>
+
+
+<!-- 
+
+    <linkedin:config name="Johnkanon123" apiKey="pe2aa0ybem9h" apiSecret="6k7Oo7z8AUIfY9ys">  
+        <linkedin:oauth-callback-config domain="localhost" localPort="8083" remotePort="8083"/>  
+        <linkedin:oauth-save-access-token>   
+            <jdbc:outbound-endpoint exchange-pattern="request-response" queryKey="INSERT_TOKEN" responseTimeout="10000" mimeType="text/plain" queryTimeout="-1" transformer-refs="LinkedinTransformer" connector-ref="LINKEDIN_TOKEN" doc:name="JDBC">    
+                <jdbc:query key="INSERT_TOKEN" value="insert into linkedin values(#[bean:token],#[bean:secret],'3');"/> 
+            </jdbc:outbound-endpoint> 
+        </linkedin:oauth-save-access-token>  
+        <linkedin:oauth-restore-access-token> 
+            <enricher target="#[header:headerOAuthAccessToken]">  
+                <jdbc:outbound-endpoint name="loadAccessToken" exchange-pattern="request-response" queryKey="SELECT_TOKEN">  
+                    <jdbc:query key="SELECT_TOKEN" value="select token,secret from linkedin where id='3';"/> 
+                </jdbc:outbound-endpoint> 
+            </enricher>
+            <component class="be.contribute.linkedin.JdbcRowComponent" />
+            <message-properties-transformer scope="invocation">
+            	<add-message-property key="OAuthAccessToken" value="#[groovy:payload['token']]" />
+            	<add-message-property key="OAuthAccessTokenSecret" value="#[groovy:payload['secret']]" />
+            </message-properties-transformer>            
+        </linkedin:oauth-restore-access-token> 
+    </linkedin:config>
+
+
+ -->
