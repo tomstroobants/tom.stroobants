@@ -19,9 +19,9 @@
 
     <spring:beans>
         <spring:bean id="jdbcDataSource" name="jdbcDataSource" class="org.enhydra.jdbc.standard.StandardDataSource" destroy-method="shutdown">
-            <spring:property name="password" value="cipal"/>
-            <spring:property name="user" value="cipal"/>
-            <spring:property name="url" value="jdbc:mysql://localhost/cipal"/>
+            <spring:property name="password" value="xxxx"/>
+            <spring:property name="user" value="xxxx"/>
+            <spring:property name="url" value="jdbc:mysql://localhost/xxxx"/>
             <spring:property name="driverName" value="com.mysql.jdbc.Driver"/>
         </spring:bean>
     </spring:beans>
@@ -30,7 +30,7 @@
 
 
 	    
-    <facebook:config name="config1" appId="445660132118788" appSecret="ac42eff5f48cce6a57d506871dbe794a"> 
+    <facebook:config name="config1" appId="yourappid" appSecret="yourappsecret"> 
         <facebook:oauth-callback-config domain="localhost" localPort="8083" remotePort="8083"></facebook:oauth-callback-config>
         
         <facebook:oauth-save-access-token>           

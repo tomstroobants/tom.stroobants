@@ -29,15 +29,15 @@
             <property name="factory-bean"/>
             <property-collection name="@http://www.springframework.org/schema/beans/property;0">
                 <property value="password" name="name"/>
-                <property value="cipal" name="value"/>
+                <property value="xxxx" name="value"/>
             </property-collection>
             <property-collection name="@http://www.springframework.org/schema/beans/property;1">
                 <property value="user" name="name"/>
-                <property value="cipal" name="value"/>
+                <property value="xxxx" name="value"/>
             </property-collection>
             <property-collection name="@http://www.springframework.org/schema/beans/property;2">
                 <property value="url" name="name"/>
-                <property value="jdbc:mysql://localhost/cipal" name="value"/>
+                <property value="jdbc:mysql://localhost/xxxx" name="value"/>
             </property-collection>
             <property-collection name="@http://www.springframework.org/schema/beans/property;3">
                 <property value="driverName" name="name"/>
